@@ -2,7 +2,6 @@ import datetime
 from django import forms
 from django.utils.hashcompat import sha_constructor
 from django.conf import settings
-from apply.models import Application, ApplicantEvaluation
 
 class DateDropdownWidget(forms.MultiWidget):
     def __init__(self,attrs=None,year_range=None,month_range=None,day_range=None):
@@ -105,28 +104,4 @@ def make_token(user, email):
                                user.password + user.last_login.strftime('%Y-%m-%d %H:%M:%S') +
                                unicode(email)).hexdigest()[::2]
         return "%s" % (hash)
-
-def get_application(user):
-    application = Application.view('apply/by_userid', key=[user.id]).first()
-
-    if not application:
-	raise Application.DoesNotExist, "User %s, no application found" % (user,)
-
-    return application
-
-def get_evaluation(user=None, email=None, token=None):
-    if user and email:
-        applicant_evaluation = ApplicantEvaluation.view('apply/eval_by_userid_email', key=[user.id, email]).first()
-
-    elif token:
-        applicant_evaluation = ApplicantEvaluation.view('apply/eval_by_token', key=[token]).first()
-        
-    if not applicant_evaluation:
-        raise ApplicantEvaluation.DoesNotExist, "No evaluation document exists for user: %s and email: %s" % (user, email)
-
-    return applicant_evaluation
-
-def get_evaluations_for_applicant(user):
-    return ApplicantEvaluation.view('apply/eval_by_userid', key=user.id).all()
-
 
