@@ -29,25 +29,21 @@ class ForeignKey(models.ForeignKey):
     def get_db_prep_lookup(self, *args, **kwargs):
         look_up = args[0]
         value = args[1]
-        if value == [] and look_up == 'exact':
-            # A special case where querying on an empty list filter(some_list=[])
-            return [[]]
-        else:
 
-            if type(value) == self.rel.to:
-                # Got a single value
-                try:
-                    return ObjectId(value.pk)
-                except InvalidId:
-                    # Provide a better message for invalid IDs
-                    assert isinstance(value, unicode)
-                    if len(value) > 13:
-                        value = value[:10] + '...'
-                    msg = "AutoField (default primary key) values must be strings " \
-                        "representing an ObjectId on MongoDB (got %r instead)" % value
-                    raise InvalidId(msg)
-            else:
-                return super(ForeignKey, self).get_db_prep_lookup(*args, **kwargs)
+        if type(value) == self.rel.to:
+            # Got a single value
+            try:
+                return ObjectId(value.pk)
+            except InvalidId:
+                # Provide a better message for invalid IDs
+                assert isinstance(value, unicode)
+                if len(value) > 13:
+                    value = value[:10] + '...'
+                msg = "AutoField (default primary key) values must be strings " \
+                    "representing an ObjectId on MongoDB (got %r instead)" % value
+                raise InvalidId(msg)
+        else:
+            return super(ForeignKey, self).get_db_prep_lookup(*args, **kwargs)
             
     def get_db_prep_value(self, value, connection, prepared=False):
         raise NotImplimentedError
