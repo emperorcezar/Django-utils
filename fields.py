@@ -1,7 +1,7 @@
 from django.db import models
 
 #TODO Make this non-mongo specific
-from pymongo.objectid import ObjectId, InvalidId
+from bson.objectid import ObjectId, InvalidId
 
 class ForeignKey(models.ForeignKey):
     __metaclass__ = models.fields.subclassing.SubfieldBase
