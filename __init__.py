@@ -105,3 +105,9 @@ def make_token(user, email):
                                unicode(email)).hexdigest()[::2]
         return "%s" % (hash)
 
+
+def short_time(t):
+    t = t.strftime('%I:%M%p')
+    if t[0] == '0':
+        t = t[1:]
+    return t.replace(':00', '').replace('M','').lower()
